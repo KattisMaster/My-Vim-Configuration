@@ -4,7 +4,8 @@ filetype off
 let g:mapleader="\<Space>"
 let g:maplocalleader="\<Space>"
 let g:xptemplate_brace_complete = '([{"'
-
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 
     if empty(glob('~/.vim/autoload/plug.vim'))
@@ -17,11 +18,13 @@ call plug#begin('~/.vim/bundle')
 " let Vundle manage Vundle, required
 Plug 'VundleVim/Vundle.vim'                   
 
+"Navigation
 Plug 'junegunn/fzf.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-surround'
 Plug 'Raimondi/delimitMate'
 
+"UI theme
 Plug 'vim-airline/vim-airline'
 Plug 'vim-syntastic/syntastic'
 Plug 'ryanoasis/vim-devicons'
@@ -36,7 +39,10 @@ Plug 'morhetz/gruvbox'
 Plug 'thomasfaingnaert/vim-lsp-ultisnips'
 Plug 'drmingdrmer/xptemplate'
 Plug 'wsdjeg/asyncomplete-clang.vim'
-Plug 'ycm-core/YouCompleteMe'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clangd-completer' }
+Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 Plug 'puremourning/vimspector'
 Plug 'octol/vim-cpp-enhanced-highlight'
 
@@ -166,10 +172,18 @@ nnoremap <buffer> <localleader>w :set wrap!<cr>
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11'
 
+
+" make YCM compatible with UltiSnips (using supertab)
+" ------------------------------------------------------------------------
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<Right>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+
 "c++ configuateion------------------------------------------------------------------------
 autocmd filetype cpp nnoremap <F9> :w <bar> !g++ -o  %:r.out % -std=c++11<CR>
 autocmd filetype cpp nnoremap <F10> :!./%:r.out<CR>
-autocmd filetype cpp nnoremap<F5> :w <bar> !g++ % -ggdb -o %:r && ./%:r <CR>
+autocmd filetype cpp nnoremap <F5> :w <bar> !g++ % -ggdb -o %:r && ./%:r <CR>
 autocmd filetype cpp nnoremap <C-C> :s/^\(\s*\)/\1\/\/<CR> :s/^\(\s*\)\/\/\/\//\1<CR> $
 autocmd BufNewFile *.cpp call AddTemplate(" ~/.vim/templates/skeleton.cpp")
 
