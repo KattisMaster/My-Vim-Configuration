@@ -4,14 +4,21 @@ filetype off
 let g:mapleader="\<Space>"
 let g:maplocalleader="\<Space>"
 let g:xptemplate_brace_complete = '([{"'
+
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-
+if has('nvim')
+    if empty(glob('~/.config/nvim/autoload/plug.vim'))
+        silent !wget -P ~/.config/nvim/autoload/ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    endif
+else
     if empty(glob('~/.vim/autoload/plug.vim'))
      silent !wget -P ~/.vim/autoload/ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
     endif
+endif
 
 
 call plug#begin('~/.vim/bundle')
@@ -33,7 +40,7 @@ Plug 'rafi/awesome-vim-colorschemes'
 Plug 'preservim/nerdcommenter'
 Plug 'ervandew/supertab'
 Plug 'morhetz/gruvbox'
-
+Plug 'mhinz/vim-startify'
 
 "Snippet for c++...............
 Plug 'thomasfaingnaert/vim-lsp-ultisnips'
@@ -45,7 +52,7 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'puremourning/vimspector'
 Plug 'octol/vim-cpp-enhanced-highlight'
-
+Plug 'epheien/termdbg'
 call plug#end()
 
 filetype plugin on
@@ -135,6 +142,10 @@ endif
 
 colorscheme gruvbox
 
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+"Cursor change block to line after insert
+"------------------------------------------------------------------
 
 set nu rnu " relative line numbering
 set clipboard=unnamed " public copy/paste register
@@ -168,22 +179,17 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " enable or disable line wrapping in current buffer
 nnoremap <buffer> <localleader>w :set wrap!<cr>
 
-" c++11 support in syntastic
-let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = ' -std=c++11'
-
-
 " make YCM compatible with UltiSnips (using supertab)
 " ------------------------------------------------------------------------
 " better key bindings for UltiSnipsExpandTrigger
-let g:UltiSnipsExpandTrigger = "<Right>"
+let g:UltiSnipsExpandTrigger = "<c-j>"
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
 "c++ configuateion------------------------------------------------------------------------
-autocmd filetype cpp nnoremap <F9> :w <bar> !g++ -o  %:r.out % -std=c++11<CR>
-autocmd filetype cpp nnoremap <F10> :!./%:r.out<CR>
-autocmd filetype cpp nnoremap <F5> :w <bar> !g++ % -ggdb -o %:r && ./%:r <CR>
+autocmd filetype cpp nnoremap gcc :w <bar> !g++ -o  %:r.out % -std=c++11<CR>
+autocmd filetype cpp nnoremap gcr :!./%:r.out<CR>
+autocmd filetype cpp nnoremap cr :w <bar> !g++ % -ggdb -o %:r && ./%:r <CR>
 autocmd filetype cpp nnoremap <C-C> :s/^\(\s*\)/\1\/\/<CR> :s/^\(\s*\)\/\/\/\//\1<CR> $
 autocmd BufNewFile *.cpp call AddTemplate(" ~/.vim/templates/skeleton.cpp")
 
@@ -196,4 +202,16 @@ function AddTemplate(tmpl_file)
     set nomodified
     normal G
 endfunction
+
+" c++11 support in syntastic
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ' -std=c++11'
+"Vimspector configuration--------------------------------------------------------------------
+let g:vimspector_enable_mappings = 'HUMAN'
+packadd! vimspector
+nmap <leader>dd :call vimspector#Launch()<CR>
+nmap <leader>dx :VimspectorReset<CR>
+nmap <leader>de :VimspectorEval
+nmap <leader>dw :VimspectorWatch
+nmap <leader>do :VimspectorShowOutput
 
